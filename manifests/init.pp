@@ -10,12 +10,18 @@
 class suricata (
   $package_name = $suricata::params::package_name,
   $service_name = $suricata::params::service_name,
+  $monitor_interface = $suricata::params::monitor_interface,
 ) inherits suricata::params {
 
-  # validate parameters here
+  include apt
 
-  class { 'suricata::install': } ->
-  class { 'suricata::config': } ~>
-  class { 'suricata::service': } ->
-  Class['suricata']
+  # validate parameters here
+  if $monitor_interface in "$::{interfaces}" {
+    class { 'suricata::install': } ->
+    class { 'suricata::config': } ~>
+    class { 'suricata::service': } ->
+    Class['suricata']
+  } else {
+    notice "${monitor_interface} not present"
+  }
 }

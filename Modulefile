@@ -8,3 +8,4 @@ description   ''
 project_page  'https://github.com/naturalis/puppet-suricata'
 
 dependency 'puppetlabs/stdlib'
+dependency 'puppetlabs/apt'

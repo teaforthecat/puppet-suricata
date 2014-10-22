@@ -34,6 +34,9 @@ class suricata::prepare {
 # set max ring size
 # ethtool -G eth3 rx 4096
 
+# set promisc mode
+# ifconfig eth3 promisc
+
 # add kernel parameters
 # sysctl -w net.core.netdev_max_backlog=250000
 # sysctl -w net.core.rmem_max = 16777216

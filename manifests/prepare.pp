@@ -4,7 +4,14 @@ class suricata::prepare {
 
 # prepare $suricata::monitor_interface
 # install ethtool
+  package { 'ethtool':
+    ensure => installed,
+  }
 # service irqbalance stop
+  service { 'irqbalance':
+    ensure => stopped,
+    enable => false,
+  }
 # set_irq_affinity
 # set InterruptThrottleRate to 3000? (in driver)
 # load driver

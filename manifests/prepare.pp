@@ -12,37 +12,41 @@ class suricata::prepare {
     ensure => stopped,
     enable => false,
   }
-# set_irq_affinity
-# set InterruptThrottleRate to 3000? (in driver)
-# load driver
-
 # disable offloading
-# ethtool -K eth3 tso off
-# ethtool -K eth3 gro off
-# ethtool -K eth3 lro off
-# ethtool -K eth3 gso off
-# ethtool -K eth3 rx off
-# ethtool -K eth3 tx off
-# ethtool -K eth3 sg off
-# ethtool -K eth3 rxvlan off
-# ethtool -K eth3 txvlan off
+# generic-receive-offload
+  exec { 'disable_gro':
+    command => "/sbin/ethtool -K $suricata::monitor_interface gro off",
+    unless  => "/sbin/ethtool -k $suricata::monitor_interface | grep 'generic-receive-offload: off'"
+  }
+# rx-vlan-offload
+  exec { 'disable_rxvlan':
+    command => "/sbin/ethtool -K $suricata::monitor_interface rxvlan off",
+    unless  => "/sbin/ethtool -k $suricata::monitor_interface | grep 'rx-vlan-offload: off'"
+  }
+# generic-segmentation-offload
+  exec { 'disable_gso':
+    command => "/sbin/ethtool -K $suricata::monitor_interface gso off",
+    unless  => "/sbin/ethtool -k $suricata::monitor_interface | grep 'generic-segmentation-offload: off'"
+  }
+# tcp-segmentation-offload
+  exec { 'disable_sg':
+    command => "/sbin/ethtool -K $suricata::monitor_interface sg off",
+    unless  => "/sbin/ethtool -k $suricata::monitor_interface | grep 'tcp-segmentation-offload: off'"
+  }
+# rx-checksumming
+  exec { 'disable_rx':
+    command => "/sbin/ethtool -K $suricata::monitor_interface rx off",
+    unless  => "/sbin/ethtool -k $suricata::monitor_interface | grep 'rx-checksumming: off'"
+  }
+# set promisc mode
+  exec { 'set_promisc':
+    command => "/sbin/ifconfig $suricata::monitor_interface promisc",
+    unless  => "/sbin/ifconfig $suricata::monitor_interface | grep 'PROMISC'"
+  }
 
-# load balance udp flows
-# ethtool -N eth3 rx-flow-hash udp4 sdfn
-# ethtool -N eth3 rx-flow-hash udp6 sdfn
-# ethtool -n eth3 rx-flow-hash udp6
-# ethtool -n eth3 rx-flow-hash udp4
-
-# coalesce settings, http://pevma.blogspot.nl/2014/06/coalesce-parameters-and-rx-ring-size.html
-# ethtool -C eth3 rx-usecs 0 rx-frames 0
-# disable interrupt throth
-# ethtool -C eth3 adaptive-rx off
 
 # set max ring size
 # ethtool -G eth3 rx 4096
-
-# set promisc mode
-# ifconfig eth3 promisc
 
 # add kernel parameters
 # sysctl -w net.core.netdev_max_backlog=250000
@@ -53,7 +57,4 @@ class suricata::prepare {
 
 # suricata metrics to watch
 # http://pevma.blogspot.nl/2014/08/suricata-flows-flow-managers-and-effect.html
-# http://blog.inliniac.net/2014/07/28/suricata-flow-logging/
-# suricata config for perf
-# http://pevma.blogspot.nl/2014/06/suricata-idps-getting-best-out-of.html
 }

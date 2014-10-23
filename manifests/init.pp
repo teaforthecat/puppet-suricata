@@ -16,7 +16,7 @@ class suricata (
   include apt
 
   # validate parameters here
-  if $monitor_interface in $interfaces {
+  if $suricata::monitor_interface in $::interfaces {
     class { 'suricata::prepare': } ->
     class { 'suricata::install': } ->
     class { 'suricata::config': } ~>
@@ -24,6 +24,6 @@ class suricata (
     Class['suricata']
   } else {
     notice "${monitor_interface} not present"
-    notice "Available interfaces: ${interfaces}"
+    notice "Available interfaces: ${::interfaces}"
   }
 }

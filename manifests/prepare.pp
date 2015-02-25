@@ -45,6 +45,8 @@ class suricata::prepare {
   }
 
 
+# set max mtu size on monitor interface
+# ifconfig em1 mtu 9216
 # set max ring size
 # ethtool -G eth3 rx 4096
 

@@ -11,9 +11,18 @@ class suricata (
   $package_name = $suricata::params::package_name,
   $service_name = $suricata::params::service_name,
   $monitor_interface = $suricata::params::monitor_interface,
-) inherits suricata::params {
+  ) inherits suricata::params {
 
-  include apt
+  case $::osfamily {
+    'redhat': {
+    }
+    'debian': {
+      include apt
+    }
+    default: {
+    }
+  }
+
 
   # validate parameters here
   if $suricata::monitor_interface in $::interfaces {
